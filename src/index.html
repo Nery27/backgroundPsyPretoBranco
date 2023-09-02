@@ -1,0 +1,42 @@
+<shader-art autoplay dpr="1" role="img" aria-label="A repetetive animated checkers pattern as an infinite loop">
+  <script type="text/buffer" id="position" data-size="2">
+    [-1, 1, -1,-1, 1,1, 1, 1, -1,-1, 1,-1]
+  </script>
+  <script type="text/buffer" id="uv" data-size="2">
+    [ 0, 0,  0, 1, 1,0, 1, 0,  0, 1, 1, 1]
+  </script>
+  <script type="text/vert">
+    precision highp float;
+    attribute vec4 position;
+    attribute vec2 uv;
+    varying vec2 vUv;
+
+    void main() {
+      vUv = uv;
+      gl_Position = position;
+    }
+  </script>
+  <script type="text/frag">
+    precision mediump float;
+    varying vec2 vUv;
+    uniform vec2 resolution;
+    uniform float time;
+
+    const float PI = 3.141592654;
+    
+    void main () {
+      float aspect = resolution.x / resolution.y; 
+      vec2 p = mod(vUv, 1.) * 2.*PI * 100.;
+      p.x *= aspect;
+      vec3 c = vec3(.5+ .5 * vUv.x, .1, .5 * vUv.y);
+      float t = time * 0.2;
+      float zoom = .05;
+      float pattern = max(0., 
+        sin((mod(t,2.)) * PI + .5*PI * sin(p.x * zoom)) * 
+        sin((mod(t,2.)) * PI + .5*PI * sin(p.y * zoom))
+      );
+      pattern = smoothstep(2. * pattern, 0., .1);
+      gl_FragColor = vec4(vec3(pattern), 1.0);
+    }
+  </script>
+</shader-art>
